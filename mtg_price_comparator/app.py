@@ -9,7 +9,7 @@ import streamlit as st
 
 st.set_page_config(page_title='MTG 売却比較', page_icon='🃏', layout='wide', initial_sidebar_state='collapsed')
 SITES = ['晴れる屋（買取）', 'カードラッシュ（買取）', 'メルカリ', 'Yahoo!フリマ']
-DOMAINS = ['hareruyamtg.com', 'cardrush-mtg.jp', 'jp.mercari.com', 'paypayfleamarket.yahoo.co.jp']
+DOMAINS = ['hareruyamtg.com', 'cardrush.media', 'jp.mercari.com', 'paypayfleamarket.yahoo.co.jp']
 
 
 def search_link(site, name):
@@ -17,7 +17,7 @@ def search_link(site, name):
     if site == SITES[0]:
         return 'https://www.hareruyamtg.com/ja/purchase/search'
     if site == SITES[1]:
-        return 'https://www.cardrush-mtg.jp/page/79'
+        return 'https://cardrush.media/mtg/buying_prices'
     if site == SITES[2]:
         return 'https://jp.mercari.com/search?keyword=' + q
     return 'https://paypayfleamarket.yahoo.co.jp/search/' + q
@@ -83,7 +83,13 @@ query = ' '.join(filter(None, [name.strip(), edition.strip(), language, 'foil' i
 st.subheader('① 4サイトの検索')
 for site in SITES:
     st.link_button(f'🔎 {site}を開く', search_link(site, name), use_container_width=True)
-st.caption('買取店リンクは検索入口です。サイト内でカード名を入力してください。')
+st.caption('カードラッシュは指定されたMTG買取表を直接開きます。サイト内検索は各サイトで操作してください。')
+st.markdown('**APIキー不要：カード名を指定したWeb検索**')
+for site, domain in zip(SITES, DOMAINS):
+    term = ' '.join(filter(None, [name.strip(), edition.strip(), 'Foil' if foil != '通常' else '', '買取' if site in SITES[:2] else '']))
+    target = 'https://www.google.com/search?q=' + urllib.parse.quote(f'site:{domain} {term}', safe='')
+    st.link_button(f'🔎 {site}の「{name}」をWeb検索', target, use_container_width=True)
+st.caption('Googleの検索結果に移動する機能です。価格は自動取得しません。')
 
 st.subheader('② 公開検索結果から価格候補を取得')
 if st.button('4サイトを自動検索', type='primary', use_container_width=True):
