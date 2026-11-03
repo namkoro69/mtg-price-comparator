@@ -15,12 +15,12 @@ DOMAINS = ['hareruyamtg.com', 'cardrush.media', 'jp.mercari.com', 'paypayfleamar
 def search_link(site, name):
     q = urllib.parse.quote(name.strip(), safe='')
     if site == SITES[0]:
-        return 'https://www.hareruyamtg.com/ja/purchase/search'
+        return 'https://www.hareruyamtg.com/ja/purchase/search?' + urllib.parse.urlencode({'product': name.strip(), 'category': '', 'cardset': '', 'colorsType': 0, 'cardtypesType': 0, 'subtype': '', 'format': '', 'illustrator': '', 'search.x': '検索'})
     if site == SITES[1]:
         return 'https://cardrush.media/mtg/buying_prices?' + urllib.parse.urlencode({'displayMode': 'リスト', 'limit': 100, 'name': name.strip(), 'page': 1})
     if site == SITES[2]:
-        return 'https://jp.mercari.com/search?keyword=' + q
-    return 'https://paypayfleamarket.yahoo.co.jp/search/' + q
+        return 'https://jp.mercari.com/search?keyword=' + q + '&sort=created_time&order=desc'
+    return 'https://paypayfleamarket.yahoo.co.jp/search/' + q + '?withSpeller=0&sort=openTime&order=desc'
 
 
 def search_api(query, domain, key):
@@ -83,7 +83,7 @@ query = ' '.join(filter(None, [name.strip(), edition.strip(), language, 'foil' i
 st.subheader('① 4サイトの検索')
 for site in SITES:
     st.link_button(f'🔎 {site}を開く', search_link(site, name), use_container_width=True)
-st.caption('カードラッシュはカード名を指定して買取表を開きます（検索結果はサイト側の仕様に依存）。サイト内検索は各サイトで操作してください。')
+st.caption('晴れる屋・カードラッシュはカード名を指定して買取検索を開きます。メルカリ・Yahoo!フリマは新しい順で検索します（各サイトの仕様に依存）。')
 st.markdown('**APIキー不要：カード名を指定したWeb検索**')
 for site, domain in zip(SITES, DOMAINS):
     term = ' '.join(filter(None, [name.strip(), edition.strip(), 'Foil' if foil != '通常' else '', '買取' if site in SITES[:2] else '']))
